@@ -27,3 +27,5 @@ If there is an error at this point, the application will exit.
 On Windows, application should be executed with python.exe and not pythonw.exe, otherwise a console opens as well as the GUI.
 
 The memory footprint is quite large as all the Drive elements and Tkinter treeviews are stored in lists and dictionaries ; this cannot really be avoided.
+
+Google Drive allows files to have multiple "parents", i.e. be in multiple folders : this is NOT implemented and only the first parent will be picked up. 
