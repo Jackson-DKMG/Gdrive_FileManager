@@ -358,7 +358,6 @@ class contextFunctions(Thread):
         Thread(target=self.updateFiles).start()
 
     def callback(self, request_id, response, exception):
-        print(response.get())
         if exception:
             # Handle error
             settings.error = str(exception).split('"')[1].split('"')[0]
