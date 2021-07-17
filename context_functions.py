@@ -1,12 +1,13 @@
-from datetime import datetime
+#All functions to handle the file operations (upload, copy, move, download, delete, star)
+#Kinda blown out of proportions due to adding features.
+#Lots of comments though, so hopefully it remains understandable.
+
 from json import dump
 from os import mkdir, path
-#from shutil import move
 from threading import Thread, active_count
 from time import sleep
 from io import BytesIO
 from googleapiclient.http import MediaIoBaseDownload, MediaFileUpload
-from time import time
 import settings
 
 class contextFunctions(Thread):
@@ -358,6 +359,7 @@ class contextFunctions(Thread):
         Thread(target=self.updateFiles).start()
 
     def callback(self, request_id, response, exception):
+        print(response.get())
         if exception:
             # Handle error
             settings.error = str(exception).split('"')[1].split('"')[0]
