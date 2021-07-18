@@ -359,7 +359,7 @@ class contextFunctions(Thread):
         Thread(target=self.updateFiles).start()
 
     def callback(self, request_id, response, exception):
-        print(response.get())
+        #print(response.get())
         if exception:
             # Handle error
             settings.error = str(exception).split('"')[1].split('"')[0]
@@ -375,7 +375,7 @@ class contextFunctions(Thread):
         if exception:
             # Handle error
             settings.error = str(exception).split('"')[1].split('"')[0]
-            sleep(3)
+            sleep(3)  #TODO: this is stupid, need to subprocess. Problem being, the UI can only be updated by the main thread, I think ?
             settings.error = ""
             pass
 
@@ -604,7 +604,7 @@ class contextFunctions(Thread):
                                 counter = 0
                         except:
                             pass
-        else:  # restore elements. Issue is if restoring a children of a deleted folder, not its parent. In that case, it must be restored at root.
+        else:  # restore elements. Issue is if restoring a child of a deleted folder, not its parent. In that case, it must be restored at root.
             counter = 0
             for i in items:
                 settings.itemMoving = i['text']

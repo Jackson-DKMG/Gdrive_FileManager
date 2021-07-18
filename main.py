@@ -91,7 +91,6 @@ class appMainWindow():
 
     def showContextMenu(self,
                         event):  # show a contextual menu. If nothing is selected already, or if another single item is selected,
-
         try:
             if self.contextMenu:
                 self.contextMenu.destroy()
@@ -121,6 +120,13 @@ class appMainWindow():
                         self.contextMenu.delete(1)  # delete the "copy/move" option
                         self.contextMenu.delete(1)  # delete the 'Remove' option and replace with a 'Restore' one
                         self.contextMenu.add_command(label="Restore", command=lambda: self.removeRestore(flag=False))
+                    for i in settings.widget.selection():
+                        print(settings.widget.item(i))
+                        if not settings.widget.item(i)['values'][3] == settings.owner: #if I don't own the files or folders, can't delete/rename
+                            self.contextMenu.delete(2)  # remove 'rename' option
+                            self.contextMenu.delete(2)
+                            break  #if just one file is not owned by me, remove the options for the whole selection.
+
                 else:
                     item = settings.widget.identify_row(event.y)
                     settings.widget.selection_set(item)
@@ -131,6 +137,14 @@ class appMainWindow():
                         self.contextMenu.delete(1)  # delete the 'Remove' option and replace with a 'Restore' one
                         self.contextMenu.add_command(label="Restore", command=lambda: self.removeRestore(flag=False))
 
+                    if settings.treeview.selection()[0] == settings.directory['theirShares']: #I don't own these files, can't do much on them.
+                        self.contextMenu.delete(2)  # remove 'rename' option
+                        self.contextMenu.delete(2)  # delete the 'Remove' option
+
+                    if not settings.widget.item(settings.widget.selection()[0])['values'][3] == settings.owner:  # if I don't own the files or folders, can't delete/rename
+                        self.contextMenu.delete(2)  # remove 'rename' option
+                        self.contextMenu.delete(2)
+
             else:  # treeview
                 settings.widget = settings.treeview
                 self.contextMenu.add_command(label="Upload Files", command=lambda: self.uploadPopup(event))
@@ -138,7 +152,7 @@ class appMainWindow():
                 item = settings.widget.identify_row(event.y)  # this treeview allows only one selected item.
                 settings.widget.selection_set(item)
 
-                # do not display the context menu if a top level folder is selected, except "create folder" at root
+                # do not display the context menu if a top level folder is selected, except "create folder" and "upload files" at root
                 for key in settings.directory:
                     if key in {'starred', 'trash', 'theirShares', 'myShares', 'orphans'}:
                         if settings.widget.selection()[0] == settings.directory[key]:
@@ -155,6 +169,11 @@ class appMainWindow():
                     self.contextMenu.delete(1)  # delete the 'Upload' option
                     self.contextMenu.delete(1)  # delete the 'Remove' option and replace with a 'Restore' one
                     self.contextMenu.add_command(label="Restore", command=lambda: self.removeRestore(flag=False))
+
+                if not settings.widget.item(settings.widget.selection()[0])['values'][3] == settings.owner:  # if I don't own the files or folders, can't delete/rename
+                    self.contextMenu.delete(0) # remove 'create folder'
+                    self.contextMenu.delete(2)  # remove 'rename' option
+                    self.contextMenu.delete(2)
 
             self.contextMenu.tk_popup(event.x_root, event.y_root)
 
@@ -600,7 +619,7 @@ class appMainWindow():
                     del data  # saving some memory.
 
                     ### NOW GET FULL LIST OF FILES AND SUBFOLDERS ###
-                    # don't execute if wed're updating the data from GDrive
+                    # don't execute if we're updating the data from GDrive
 
                     while len(self.folders) > 0:
                         if not settings.retrievingFiles:
@@ -960,13 +979,14 @@ class appMainWindow():
                 for i in range(len(settings.files)):
                     if settings.treeview.selection()[0] == self.trash:
                         try:
-                            fileParent = settings.files[i]['parents']
+                            fileParent = settings.files[i]['parents'][0]
                         except:
                             fileParent = None
                         if settings.files[i]['trashed'] and (fileParent == None or fileParent == settings.rootID):
                             modified = datetime.strftime(
                                 datetime.strptime(settings.files[i]['modifiedTime'], '%Y-%m-%dT%H:%M:%S.%fZ'),
                                 '%d/%m/%y %H:%M')
+
                             try:
                                 attributes = contextFunctions().getMimeAndSize(settings.files[i]['mimeType'],
                                                                                                  settings.files[i]['size'])

@@ -17,7 +17,6 @@ class apiConnect():
         # define store
         store = file.Storage(credentials_file_path)
         credentials = store.get()
-
         if not credentials or credentials.invalid:
             return None
         else:

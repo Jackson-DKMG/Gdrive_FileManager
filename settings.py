@@ -36,8 +36,10 @@ copyInProgress = ""
 itemCopying = ""
 moveInProgress = ""
 itemMoving = ""
-
 error = ""
+
+callback_error = False  #to handle the possible file operation error
+
 drive = None
 widget = None
 
